@@ -1,0 +1,8 @@
+{%block body%}
+<form method = 'post'>
+{% csrf_token %}
+  Содержание проблемы: <br>
+  <input type="text" name="text"><br>
+  <button type="Send">Send</button>
+</form>
+{%endblock body%}

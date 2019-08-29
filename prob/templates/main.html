@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{%block body%}
+<body>
+<h2>Таблица проблем</h2>
+<div>
+<table class="table table-hover" >
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Проблема</th>
+            <th>+</th>
+            <th>Решения</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for problem in Problem%}
+        <tr>
+            <td>{{problem.number}}</td>
+            <td>{{problem.text}}</td>
+            <td>
+                <form action="/adds/" method="post">
+                {% csrf_token %}
+                <button class="btn btn-info" name="problem" value={{problem.number}}>+</button>
+                </form>
+            </td>
+            <td>
+                {%for solution in Solution%}
+                {%if solution.problem == problem%}
+                    {{solution.text}}<br><br><br>
+                {%endif%}
+                {%endfor%}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<div>
+<a href='/addp/'>
+<button class="btn btn-outline-info">+ Проблему</button>
+<a href='/logout/'>
+<button class="btn btn-outline-info">Выйти</button>
+</div>
+</body>
+{%endblock body%}

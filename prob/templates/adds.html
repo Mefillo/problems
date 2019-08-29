@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{%block body%}
+<form method = 'post' class = 'form-inline'>
+{% csrf_token %}
+  Содержание решения: <br>
+  <div class="form-group mx-sm-3 mb-2">
+  <input type="text" name="text"><br>
+  <input type="hidden" name="problem" value={{problem}}>
+  </div>
+  <button type="Send"class="btn btn-primary mb-2">Отправить</button>
+</form>
+{%endblock body%}
