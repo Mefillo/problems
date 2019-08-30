@@ -1,15 +1,13 @@
 {% extends 'base.html' %}
 {%block body%}
-<body>
-<h2>Таблица проблем</h2>
-<div>
+<div class='main'>
 <table class="table table-hover" >
     <thead>
         <tr>
-            <th>№</th>
             <th>Проблема</th>
-            <th>+</th>
+            <th>Популярность проблемы</th>
             <th>Решения</th>
+            <th>Популярность решения</th>
 
         </tr>
     </thead>
@@ -17,31 +15,55 @@
     <tbody>
         {% for problem in Problem%}
         <tr>
-            <td>{{problem.number}}</td>
-            <td>{{problem.text}}</td>
-            <td>
-                <form action="/adds/" method="post">
-                {% csrf_token %}
-                <button class="btn btn-info" name="problem" value={{problem.number}}>+</button>
+            
+            <td width="45%">{{problem.text}}</td>
+            
+            <td width="5%">
+                <form action='' method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="prolike" value={{problem.number}} />
+                            <button type="send" class="btn btn-info">{{problem.likes}}</button><br><br>
                 </form>
             </td>
-            <td>
+            
+            <td width="45%">
                 {%for solution in Solution%}
-                {%if solution.problem == problem%}
-                    {{solution.text}}<br><br><br>
-                {%endif%}
+                    {%if solution.problem == problem%}
+                        {{solution.text}}<br><br><br>
+                    {%endif%}
+                {%endfor%}
+            <form method="post">
+                {% csrf_token %}
+                <input type="textS" name="textS">
+                <button type="send" class="btn btn-info" name="problem" value={{problem.number}}>+</button>
+            </form>
+            </td>
+            
+            <td width="5%">
+                {%for solution in Solution%}
+                    {%if solution.problem == problem%}
+                        <form action='' method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="sollike" value={{solution.number}} />
+                            <button type="send" class="btn btn-info">{{solution.likes}}</button><br><br>
+                        </form>
+                    {%endif%}
                 {%endfor%}
             </td>
-        </tr>
+        
         {% endfor %}
+        </tr>
     </tbody>
 </table>
 </div>
 <div>
-<a href='/addp/'>
-<button class="btn btn-outline-info">+ Проблему</button>
-<a href='/logout/'>
-<button class="btn btn-outline-info">Выйти</button>
+<form method="post">
+{% csrf_token %}
+<div class='addp'>
+    <input type="text" name="text">
+    <button id="pbtn" type="send" class="btn btn-outline-info">+ Проблему</button>
 </div>
-</body>
+</form>
+</div>
+
 {%endblock body%}

@@ -1,0 +1,19 @@
+div.main{
+    margin: 1%;
+}
+
+#brand-button{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 25px;
+    margin-left: 20px;
+}
+
+div.addp{
+    margin-left:20px;
+    margin-top:30px;
+}
+
+#pbtn{
+    font-size: 15px;
+    margin:10px;
+}

@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Problem, Solution
 
-home = 'http://127.0.0.1:8000/'
+home = 'http://127.0.0.1:8003/'
+
 
 def problem_valid(post):
     return True
@@ -17,48 +18,57 @@ def problem_valid(post):
 def solution_valid(post):
     return True
 
-class Problems(LoginRequiredMixin, View):
+#class Problems(LoginRequiredMixin, View):
+class Problems(View):
 
     def get (self, request):
+
         return render(request, 'main.html', context = {
-            'Problem': Problem.objects.all(),
-            'Solution': Solution.objects.all()
+            'Problem': Problem.objects.all().order_by('-likes'),
+            'Solution': Solution.objects.all().order_by('-likes')
         })
 
-
-@login_required
-def addp (request):
-    if request.method == 'POST':
-        if problem_valid(request.POST):
-            l_p = Problem.objects.all().count()
-            p = Problem(
-                text = request.POST['text'],
-                number = l_p,
-                )
-            p.save()
-            return redirect (home)
-    return render (request, 'addp.html')
-    
-@login_required
-def adds (request):
-    if request.method == 'POST':
+    def post (self, request):
+        #Save new problem
         if request.POST.get('text'):
+            if problem_valid(request.POST):
+                l_p = Problem.objects.all().count()+1
+                p = Problem(
+                    text = request.POST['text'],
+                    number = l_p,
+                    likes = 0,
+                    )
+                p.save()
+
+        #Save new solution
+        if request.POST.get('textS'):
             if solution_valid(request.POST):
-                l_s = Solution.objects.all().count()  
+                l_s = Solution.objects.all().count()+1
                 p_n = request.POST['problem']
                 problem = Problem.objects.get(number = p_n)
                 print(problem) 
                 s = Solution(
-                    text = request.POST['text'],
+                    text = request.POST['textS'],
                     number = l_s,
                     problem = problem,
                     )
                 s.save()
-                return redirect (home)
 
-        if request.POST['problem']:
-            return render (request, 'adds.html', context = {'problem': request.POST['problem']})
-    return redirect (home)
+        #Save new problem like
+        if request.POST.get('prolike'):
+            p_n = request.POST['prolike']
+            NL=Problem.objects.get(number = p_n)             
+            NL.likes+=1
+            NL.save()
+
+        #Save new problem like
+        if request.POST.get('sollike'):
+            s_n = request.POST['sollike']
+            NL = Solution.objects.get(number = s_n)
+            NL.likes += 1
+            NL.save()
+        return redirect (home)
+
 
 def sign_up (request):
     if not request.user.is_authenticated:
@@ -75,4 +85,4 @@ def sign_up (request):
             form = UserCreationForm()
         return render(request, 'signup.html', {'form': form})
     else:
-        return HttpResponse('Already signup-ed')
+        return HttpResponse('Already signed-up')

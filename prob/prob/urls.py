@@ -19,14 +19,14 @@ from django.conf.urls import url
 
 from django.contrib.auth import views as auth_views
 
-from main.views import Problems, sign_up, addp, adds
+from main.views import Problems, sign_up
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^signup/$', sign_up, name='sign_up'),
-    path('addp/', addp),
-    path('adds/', adds),
+    #path('', addp),
+    #path('', adds),
     path('', Problems.as_view()),
 ]
