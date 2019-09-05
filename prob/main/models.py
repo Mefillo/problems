@@ -1,5 +1,6 @@
 from django.db import models
-
+from jsonfield import JSONField
+from django.contrib.auth.models import User
 
 class Problem (models.Model):
     text = models.TextField(null=True)
@@ -18,3 +19,10 @@ class Solution (models.Model):
     
     def __str__(self):
         return self.text
+
+
+class Utoken (models.Model):
+    '''Save likes to User'''
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    problems = JSONField(default = {'':0})
+    solutions = JSONField(default = {'':0})

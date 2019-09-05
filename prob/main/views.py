@@ -6,10 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.middleware.csrf import get_token
 
-from .models import Problem, Solution
+from .models import Problem, Solution, Utoken
 
-home = 'http://127.0.0.1:8003/'
+home = 'http://127.0.0.1:8000/'
 
 
 def problem_valid(post):
@@ -18,8 +19,25 @@ def problem_valid(post):
 def solution_valid(post):
     return True
 
-#class Problems(LoginRequiredMixin, View):
-class Problems(View):
+def problem_already_liked (ut, p_n):
+    '''Check if problem already liked/exist in dictionary of User'''
+    if p_n in ut.problems.keys():
+        return ut.problems[p_n]
+    else:
+        ut.problems.update({p_n : False})
+        ut.save()
+        return False
+
+def solution_already_liked (ut, s_n):
+    '''Check if solution already liked/exist in dictionary of User'''
+    if s_n in ut.solutions.keys():
+        return ut.solutions[s_n]
+    else:
+        ut.solutions.update({s_n : False})
+        ut.save()
+        return False
+
+class Problems(LoginRequiredMixin, View):
 
     def get (self, request):
 
@@ -50,23 +68,58 @@ class Problems(View):
                 s = Solution(
                     text = request.POST['textS'],
                     number = l_s,
-                    problem = problem,
+                    problem = problem, 
                     )
                 s.save()
 
         #Save new problem like
         if request.POST.get('prolike'):
+            #Get User
+            try:
+                ut = Utoken.objects.get(user = request.user)
+            except Utoken.DoesNotExist:
+                ut = Utoken(user = request.user)
+                ut.save()
+            #Get Problem
             p_n = request.POST['prolike']
-            NL=Problem.objects.get(number = p_n)             
-            NL.likes+=1
-            NL.save()
+            pr=Problem.objects.get(number = p_n)
+            #Check if problem liked already
+            if problem_already_liked(ut, p_n):
+                ut.problems[p_n] = False
+                ut.save()
+                pr.likes-=1
+                pr.save()
+            else:
+                ut.problems[p_n] = True
+                ut.save()
+                pr.likes+=1 
+                pr.save()
+            return redirect (home)
 
-        #Save new problem like
+
+
+        #Save new solution like
         if request.POST.get('sollike'):
+            #Get User
+            try:
+                ut = Utoken.objects.get(user = request.user)
+            except Utoken.DoesNotExist:
+                ut = Utoken(user = request.user)
+                ut.save()
+            #Get Solution
             s_n = request.POST['sollike']
-            NL = Solution.objects.get(number = s_n)
-            NL.likes += 1
-            NL.save()
+            sol = Solution.objects.get(number = s_n)
+            #Check if solution liked already
+            if solution_already_liked(ut, s_n):
+                ut.solutions[s_n] = False
+                ut.save()
+                sol.likes-=1
+                sol.save()
+            else:
+                ut.solutions[s_n] = True
+                ut.save()
+                sol.likes+=1 
+                sol.save()
         return redirect (home)
 
 
