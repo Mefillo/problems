@@ -1,6 +1,6 @@
 # Beseda
 
-<br>Create a server for solving problems in commands
+<br>Create a server for solving problems in teams
 
 To use it on local server simply run 
 
